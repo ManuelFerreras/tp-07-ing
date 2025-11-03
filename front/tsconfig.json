@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "preserve",
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "paths": {},
+    "types": ["jest", "@testing-library/jest-dom"]
+  },
+  "include": ["next-env.d.ts", "src/**/*", "__tests__/**/*"],
+  "exclude": ["node_modules"]
+}
+
+

@@ -1,0 +1,13 @@
+{
+  "name": "tp07-e2e",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "e2e": "cypress run --headless"
+  },
+  "devDependencies": {
+    "cypress": "13.13.1"
+  }
+}
+
+

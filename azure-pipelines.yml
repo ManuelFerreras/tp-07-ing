@@ -1,0 +1,159 @@
+trigger:
+  - main
+
+variables:
+  node_version: '20.x'
+  go_version: '1.22.x'
+  frontendPath: 'front'
+  backendPath: 'back'
+  e2ePath: 'e2e'
+  FRONTEND_URL: 'http://localhost:3000'
+
+stages:
+  - stage: Build_Test_Quality
+    displayName: Build, Test, Quality Gates
+    jobs:
+      - job: Frontend
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: $(node_version)
+            displayName: Use Node.js
+
+          - script: |
+              npm ci
+              npm run test:ci
+            displayName: Frontend tests
+            workingDirectory: $(frontendPath)
+
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: JUnit
+              testResultsFiles: '$(frontendPath)/test-results/junit.xml'
+              testRunTitle: 'Frontend Unit Tests'
+            condition: succeededOrFailed()
+
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish Frontend Coverage (lcov)'
+            inputs:
+              PathtoPublish: '$(frontendPath)/coverage/lcov.info'
+              ArtifactName: 'frontend-coverage-lcov'
+              publishLocation: 'Container'
+
+      - job: Backend
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: GoTool@0
+            inputs:
+              version: $(go_version)
+            displayName: Use Go
+
+          - script: |
+              make cover
+              make check-cover
+            displayName: Backend tests and coverage gate
+            workingDirectory: $(backendPath)
+
+          - script: |
+              go install github.com/t-yuki/gocover-cobertura@latest
+              gocover-cobertura < cover.out > cobertura.xml
+            displayName: Convert Go coverage to Cobertura
+            workingDirectory: $(backendPath)
+
+          - task: PublishCodeCoverageResults@1
+            inputs:
+              codeCoverageTool: Cobertura
+              summaryFileLocation: '$(backendPath)/cobertura.xml'
+              reportDirectory: '$(backendPath)'
+              pathToSources: '$(backendPath)'
+              failIfCoverageEmpty: true
+
+      - job: Sonar
+        dependsOn:
+          - Frontend
+          - Backend
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: SonarCloudPrepare@2
+            inputs:
+              SonarCloud: 'SonarCloud'
+              organization: ''
+              scannerMode: 'Other'
+              configMode: 'file'
+            displayName: 'Prepare SonarCloud (config file)'
+
+          - task: SonarCloudAnalyze@2
+            displayName: 'Run SonarCloud analysis'
+
+          - task: SonarCloudPublish@2
+            inputs:
+              pollingTimeoutSec: '300'
+            displayName: 'Publish SonarCloud Quality Gate'
+
+  - stage: Deploy_QA_and_E2E
+    displayName: Deploy locally and run E2E
+    dependsOn: Build_Test_Quality
+    condition: succeeded()
+    jobs:
+      - job: E2E
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: GoTool@0
+            inputs:
+              version: $(go_version)
+
+          - task: NodeTool@0
+            inputs:
+              versionSpec: $(node_version)
+
+          - script: |
+              nohup bash -c 'DB_DSN=./employees.db go run . > ../back_server.log 2>&1' &
+              sleep 2
+            displayName: 'Start Backend (localhost:8080)'
+            workingDirectory: $(backendPath)
+
+          - script: |
+              npm ci
+              npm run build
+              nohup bash -c 'NEXT_PUBLIC_API_URL=http://localhost:8080 npm run start > ../front_server.log 2>&1' &
+              sleep 3
+            displayName: 'Build and Start Frontend (localhost:3000)'
+            workingDirectory: $(frontendPath)
+
+          - script: |
+              npm ci
+              npx cypress run --headless
+            displayName: 'Run Cypress E2E'
+            workingDirectory: $(e2ePath)
+            env:
+              FRONTEND_URL: $(FRONTEND_URL)
+
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: JUnit
+              testResultsFiles: '$(e2ePath)/cypress/results/*.xml'
+              testRunTitle: 'E2E Tests'
+            condition: succeededOrFailed()
+
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish Cypress Videos'
+            inputs:
+              PathtoPublish: '$(e2ePath)/cypress/videos'
+              ArtifactName: 'cypress-videos'
+              publishLocation: 'Container'
+            condition: succeededOrFailed()
+
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish Cypress Screenshots'
+            inputs:
+              PathtoPublish: '$(e2ePath)/cypress/screenshots'
+              ArtifactName: 'cypress-screenshots'
+              publishLocation: 'Container'
+            condition: succeededOrFailed()
+
+
