@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="9" failures="0" errors="0" time="0.675">
-  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2025-11-04T17:06:50" time="0.208" tests="6">
+<testsuites name="jest tests" tests="9" failures="0" errors="0" time="1.035">
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2025-11-04T19:47:15" time="0.227" tests="6">
     <testcase classname=" getEmployees happy path" name=" getEmployees happy path" time="0.002">
     </testcase>
-    <testcase classname=" createEmployee happy path" name=" createEmployee happy path" time="0.001">
+    <testcase classname=" createEmployee happy path" name=" createEmployee happy path" time="0">
     </testcase>
     <testcase classname=" updateEmployee happy path" name=" updateEmployee happy path" time="0">
     </testcase>
@@ -11,15 +11,15 @@
     </testcase>
     <testcase classname=" getEmployees error path propagates message" name=" getEmployees error path propagates message" time="0.001">
     </testcase>
-    <testcase classname=" updateEmployee error path propagates message" name=" updateEmployee error path propagates message" time="0.001">
+    <testcase classname=" updateEmployee error path propagates message" name=" updateEmployee error path propagates message" time="0">
     </testcase>
   </testsuite>
-  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2025-11-04T17:06:50" time="0.159" tests="3">
-    <testcase classname=" renders and validates required" name=" renders and validates required" time="0.03">
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2025-11-04T19:47:16" time="0.482" tests="3">
+    <testcase classname=" renders and validates required" name=" renders and validates required" time="0.033">
     </testcase>
-    <testcase classname=" submit successful" name=" submit successful" time="0.007">
+    <testcase classname=" submit successful" name=" submit successful" time="0.008">
     </testcase>
-    <testcase classname=" shows error feedback" name=" shows error feedback" time="0.01">
+    <testcase classname=" shows error feedback" name=" shows error feedback" time="0.012">
     </testcase>
   </testsuite>
 </testsuites>

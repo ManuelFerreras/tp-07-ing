@@ -58,6 +58,16 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Download front coverage artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: front-coverage
+          path: front/coverage
+      - name: Download back coverage artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: back-coverage
+          path: back
       - uses: actions/setup-java@v4
         with:
           distribution: "temurin"
