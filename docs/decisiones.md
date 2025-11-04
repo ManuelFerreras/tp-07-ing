@@ -22,6 +22,12 @@
 - Exclusiones: `.next/**`, `node_modules/**`, tests (`**/*.test.*`, `**/*_test.go`).
 - Cobertura: front `coverage/lcov.info`; back `cover.out`.
 
+### Issues Sonar corregidos
+
+- Backend (`back/handlers.go`): literal duplicado "internal error" → se reemplazó por constante `internalErrorMsg` y se reutiliza en ramas 500.
+- Front (`front/src/app/layout.tsx`): props del componente marcadas como `Readonly`.
+- Front (`front/src/components/EmployeeForm.tsx`): tipo `Props` y parámetro marcados como `Readonly`.
+
 ## Cobertura (estado y brechas)
 
 - Frontend

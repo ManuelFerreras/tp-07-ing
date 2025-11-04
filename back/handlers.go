@@ -16,6 +16,8 @@ func NewAPI(store *Store) *API {
 	return &API{store: store}
 }
 
+const internalErrorMsg = "internal error"
+
 func (a *API) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/employees", func(w http.ResponseWriter, r *http.Request) {
 		setJSON(w)
@@ -61,7 +63,7 @@ type employeePayload struct {
 func (a *API) handleListEmployees(w http.ResponseWriter, _ *http.Request) {
 	list, err := a.store.ListEmployees()
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "internal error")
+        writeError(w, http.StatusInternalServerError, internalErrorMsg)
 		return
 	}
 	_ = json.NewEncoder(w).Encode(list)
@@ -80,7 +82,7 @@ func (a *API) handleCreateEmployee(w http.ResponseWriter, r *http.Request) {
 	}
 	created, err := a.store.CreateEmployee(name)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "internal error")
+        writeError(w, http.StatusInternalServerError, internalErrorMsg)
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
@@ -104,7 +106,7 @@ func (a *API) handleUpdateEmployee(w http.ResponseWriter, r *http.Request, id in
 			writeError(w, http.StatusNotFound, "not found")
 			return
 		}
-		writeError(w, http.StatusInternalServerError, "internal error")
+        writeError(w, http.StatusInternalServerError, internalErrorMsg)
 		return
 	}
 	_ = json.NewEncoder(w).Encode(updated)
