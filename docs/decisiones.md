@@ -10,6 +10,19 @@
 - E2E: Cypress (estándar de facto). Alternativas: Playwright (excelente, pero requisito pide Cypress).
 - CI/CD: Azure Pipelines + SonarCloud (requisito).
 
+## Container Registry
+
+- Elegido: GitHub Container Registry (`ghcr.io`).
+  - Justificación: integración nativa con GitHub Actions, permisos vía `GITHUB_TOKEN`, publicación sin credenciales adicionales, trazabilidad por commit SHA y fácil control de visibilidad (público/privado).
+  - Alternativas: Docker Hub (límite de pulls, rate limits), ACR/ECR/GCR (excelentes pero mayor complejidad de credenciales para este alcance).
+- Imágenes publicadas por workflow:
+  - Backend: `ghcr.io/<owner>/<repo>-back:{sha}`, `latest`
+  - Frontend: `ghcr.io/<owner>/<repo>-front:{sha}`, `latest`
+- Integración en CI:
+  - Job `docker_push` en `.github/workflows/build.yml` usa `docker/login-action` con `GITHUB_TOKEN` y `build-push-action` para construir y subir imágenes.
+  - Tags: `:${sha}` (versionado inmutable) + `:latest` (tracking).
+  - Front pasa `NEXT_PUBLIC_API_URL` como `--build-arg` en build (ajustable por ambiente en despliegue).
+
 ## Criterios de cobertura (70%)
 
 - Umbral global 70% en front y back; balancea esfuerzo/valor pedagógico.
