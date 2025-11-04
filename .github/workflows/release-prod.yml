@@ -1,0 +1,70 @@
+name: Release to PROD (Railway)
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Image tag/commit SHA to promote to :prod"
+        required: true
+        default: "${{ github.sha }}"
+
+jobs:
+  release_prod:
+    name: Promote images and redeploy PROD
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute image names
+        id: meta
+        run: |
+          OWNER_LC=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          REPO=${{ github.event.repository.name }}
+          echo "owner_lc=${OWNER_LC}" >> $GITHUB_OUTPUT
+          echo "repo=${REPO}" >> $GITHUB_OUTPUT
+
+      - name: Pull and retag backend image to :prod
+        run: |
+          BACK=ghcr.io/${{ steps.meta.outputs.owner_lc }}/${{ steps.meta.outputs.repo }}-back
+          TAG=${{ inputs.image_tag }}
+          docker pull ${BACK}:${TAG}
+          docker tag ${BACK}:${TAG} ${BACK}:prod
+          docker push ${BACK}:prod
+
+      - name: Pull and retag frontend image to :prod
+        run: |
+          FRONT=ghcr.io/${{ steps.meta.outputs.owner_lc }}/${{ steps.meta.outputs.repo }}-front
+          TAG=${{ inputs.image_tag }}
+          docker pull ${FRONT}:${TAG}
+          docker tag ${FRONT}:${TAG} ${FRONT}:prod
+          docker push ${FRONT}:prod
+
+      - name: Install Railway CLI
+        run: curl -fsSL https://railway.app/install.sh | sh
+
+      - name: Redeploy backend-prod
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          ~/.railway/bin/railway up --detach \
+            --project ${{ vars.RAILWAY_PROJECT_ID_PROD }} \
+            --service ${{ vars.RAILWAY_SERVICE_ID_BACK_PROD }}
+
+      - name: Redeploy frontend-prod
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          ~/.railway/bin/railway up --detach \
+            --project ${{ vars.RAILWAY_PROJECT_ID_PROD }} \
+            --service ${{ vars.RAILWAY_SERVICE_ID_FRONT_PROD }}
