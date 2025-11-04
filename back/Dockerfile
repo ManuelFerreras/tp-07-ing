@@ -2,6 +2,7 @@
 
 FROM golang:1.22-bookworm AS builder
 WORKDIR /app
+ENV GOTOOLCHAIN=auto
 
 # Pre-cache deps
 COPY go.mod ./
