@@ -67,3 +67,32 @@
 - Stage 1: unit + cobertura ≥70% (front/back) y Sonar en verde; falla si no.
 - Stage 2: E2E deben pasar; si fallan, no hay “deploy verde”.
 - Rollback: al fallar Stage 2, no se promueve artefacto; servicios locales se detienen al terminar el job.
+
+## Pipeline CI/CD (GitHub Actions)
+
+- Workflow: `.github/workflows/build.yml`
+  - Trigger: `push` a `main` y `pull_request` (opened/synchronize/reopened)
+  - Jobs y herramientas integradas:
+    - `build_test_front`: Node 20; `npm run test:ci` en `front/` genera `coverage/lcov.info` y aplica `coverageThreshold` global 70% (falla si <70%). Publica artifact `front-coverage`.
+    - `build_test_back`: Go 1.22; `make check-cover` genera `cover.out` y falla si cobertura total <70%. Convierte a `cobertura.xml` y publica artifact `back-coverage`.
+    - `sonar`: Java 17; ejecuta `SonarSource/sonarqube-scan-action@v6` contra SonarCloud y espera el Quality Gate por API. Si el estado ≠ `OK`, el job falla.
+    - `e2e`: levanta backend (Go) y frontend (Next) en background y corre `npx cypress run --headless` en `e2e/`. Publica JUnit, videos y screenshots; el job falla si hay specs fallidas.
+- Secrets/variables requeridas:
+  - Secrets: `SONAR_TOKEN` (token de SonarCloud)
+  - Repository variables: `SONAR_ORG`, `SONAR_PROJECT_KEY`, `SONAR_PROJECT_NAME`
+  - En E2E: `FRONTEND_URL` se pasa como env (usa `http://localhost:3000` por defecto).
+- Artefactos publicados:
+  - Front: `front/coverage/lcov.info`
+  - Back: `back/cover.out`, `back/cobertura.xml`
+  - E2E: `e2e/cypress/results/*.xml`, `e2e/cypress/videos/**`, `e2e/cypress/screenshots/**`
+- Criterios de Quality Gate efectivos (bloquean merge/deploy):
+  - Cobertura <70%:
+    - Front: Jest falla por `coverageThreshold` → falla `build_test_front`.
+    - Back: `make check-cover` retorna código ≠0 → falla `build_test_back`.
+  - SonarCloud Quality Gate Failed (issues críticos/Blocker o cobertura insuficiente en Nuevo Código):
+    - Paso “Wait for Sonar Quality Gate” hace `exit 1` → falla `sonar`.
+  - E2E fallidos:
+    - `npx cypress run` retorna código ≠0 → falla `e2e`.
+- Fail fast y protección de ramas:
+  - Dependencias `needs` hacen que si un job falla no ejecuten los siguientes.
+  - Activar Branch Protection en `main` para requerir “SonarCloud Code Analysis” y los checks de `build_test_front`, `build_test_back` y `e2e`.
