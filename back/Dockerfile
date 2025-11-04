@@ -9,7 +9,7 @@ COPY go.mod ./
 RUN --mount=type=cache,target=/go/pkg/mod \
     go mod download || true
 
-COPY . .
+COPY *.go .
 RUN --mount=type=cache,target=/go/pkg/mod \
     CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o server .
 
@@ -20,6 +20,12 @@ COPY --from=builder /app/server ./server
 ENV DB_DSN=/data/employees.db
 VOLUME ["/data"]
 EXPOSE 8080
+# Run as non-root user for better security
+RUN useradd -u 10001 -m appuser && \
+    mkdir -p /data && \
+    chown -R 10001:10001 /app /data
+USER 10001
+
 ENTRYPOINT ["/app/server"]
 
 
