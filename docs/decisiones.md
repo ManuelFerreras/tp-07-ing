@@ -49,6 +49,19 @@
 - Datos: se crean por spec; sin dependencia entre specs.
 - Selectores: última fila `table tbody tr:last-child td:nth-child(2)`; acciones por texto.
 
+### Escenarios E2E implementados
+
+- Crear registro (`e2e/cypress/e2e/create_employee.cy.ts`)
+  - Paso a paso: visitar `/employees` → completar input `name` → click "Create".
+  - Verificación: última fila de la tabla (columna nombre) coincide con el valor ingresado.
+- Actualizar registro (`e2e/cypress/e2e/update_employee.cy.ts`)
+  - Paso a paso: crear registro → click "Edit" en la última fila → modificar nombre → click "Update".
+  - Verificación: última fila refleja el nuevo nombre.
+- Manejo de errores (`e2e/cypress/e2e/error_handling.cy.ts`)
+  - 422 al crear: `cy.intercept('POST', '**/employees', { statusCode: 422, body: { error: 'name is required' } })`.
+  - 500 al actualizar: `cy.intercept('PUT', '**/employees/*', { statusCode: 500, body: { error: 'internal error' } })`.
+  - Verificación: la UI muestra el mensaje en `[role="alert"]`.
+
 ## Quality Gates y rollback
 
 - Stage 1: unit + cobertura ≥70% (front/back) y Sonar en verde; falla si no.

@@ -6,8 +6,8 @@
     "e2e": "cypress run --headless"
   },
   "devDependencies": {
-    "cypress": "13.13.1"
+    "@types/node": "^20.11.30",
+    "cypress": "13.13.1",
+    "typescript": "^5.4.5"
   }
 }
-
-
