@@ -8,7 +8,7 @@ export default function EmployeesPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const editingEmployee = useMemo(() => employees.find(e => e.id === editingId) || null, [employees, editingId]);
+  const editingEmployee = useMemo(() => employees?.find(e => e.id === editingId) || null, [employees, editingId]);
 
   async function refresh() {
     try {
@@ -26,7 +26,7 @@ export default function EmployeesPage() {
 
   async function handleCreate(name: string) {
     const emp = await createEmployee(name);
-    setEmployees(prev => [...prev, emp]);
+    setEmployees(prev => [...(prev || []), emp]);
   }
 
   async function handleUpdate(name: string) {
@@ -57,7 +57,7 @@ export default function EmployeesPage() {
           <tr><th>ID</th><th>Name</th><th>Actions</th></tr>
         </thead>
         <tbody>
-          {employees.map(e => (
+          {employees?.map(e => (
             <tr key={e.id}>
               <td>{e.id}</td>
               <td>{e.name}</td>

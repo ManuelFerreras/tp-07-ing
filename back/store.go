@@ -50,7 +50,8 @@ func (s *Store) ListEmployees() ([]Employee, error) {
 	}
 	defer rows.Close()
 
-	var result []Employee
+    // Ensure non-nil slice so JSON encodes as [] instead of null
+    result := make([]Employee, 0)
 	for rows.Next() {
 		var e Employee
 		if err := rows.Scan(&e.ID, &e.Name); err != nil {
