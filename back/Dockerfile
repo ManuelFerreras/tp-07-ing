@@ -5,10 +5,10 @@ WORKDIR /app
 ENV GOTOOLCHAIN=auto
 
 # Pre-cache deps
-COPY go.mod ./
-# go.sum might not exist locally; allow download to generate
+COPY go.mod go.sum ./
+# Download modules (will populate module cache and validate checksums)
 RUN --mount=type=cache,target=/go/pkg/mod \
-    go mod download || true
+    go mod download
 
 COPY *.go .
 RUN --mount=type=cache,target=/go/pkg/mod \
