@@ -2,14 +2,14 @@
 
 import { useState, FormEvent, useEffect } from 'react';
 
-type Props = {
+type Props = Readonly<{
   initialName?: string;
   onSubmit: (name: string) => Promise<void> | void;
   submitLabel?: string;
   error?: string | null;
-};
+}>;
 
-export default function EmployeeForm({ initialName, onSubmit, submitLabel, error }: Props) {
+export default function EmployeeForm({ initialName, onSubmit, submitLabel, error }: Readonly<Props>) {
   const [name, setName] = useState<string>(initialName || '');
   const [localError, setLocalError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
