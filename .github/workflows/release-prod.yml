@@ -54,13 +54,17 @@ jobs:
           docker push ${FRONT}:prod
 
       - name: Install Railway CLI
-        run: curl -fsSL https://railway.app/install.sh | sh
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install Railway CLI (npm)
+        run: npm i -g @railway/cli
 
       - name: Redeploy backend-prod
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         run: |
-          ~/.railway/bin/railway up --detach \
+          railway up --detach \
             --project ${{ vars.RAILWAY_PROJECT_ID_PROD }} \
             --service ${{ vars.RAILWAY_SERVICE_ID_BACK_PROD }}
 
@@ -68,6 +72,6 @@ jobs:
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         run: |
-          ~/.railway/bin/railway up --detach \
+          railway up --detach \
             --project ${{ vars.RAILWAY_PROJECT_ID_PROD }} \
             --service ${{ vars.RAILWAY_SERVICE_ID_FRONT_PROD }}
