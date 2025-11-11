@@ -10,6 +10,52 @@
 - E2E: Cypress (estándar de facto). Alternativas: Playwright (excelente, pero requisito pide Cypress).
 - CI/CD: Azure Pipelines + SonarCloud (requisito).
 
+## Container Registry
+
+- Elegido: GitHub Container Registry (`ghcr.io`).
+  - Justificación: integración nativa con GitHub Actions, permisos vía `GITHUB_TOKEN`, publicación sin credenciales adicionales, trazabilidad por commit SHA y fácil control de visibilidad (público/privado).
+  - Alternativas: Docker Hub (límite de pulls, rate limits), ACR/ECR/GCR (excelentes pero mayor complejidad de credenciales para este alcance).
+- Imágenes publicadas por workflow:
+  - Backend: `ghcr.io/<owner>/<repo>-back:{sha}`, `latest`
+  - Frontend: `ghcr.io/<owner>/<repo>-front:{sha}`, `latest`
+- Integración en CI:
+  - Job `docker_push` en `.github/workflows/build.yml` usa `docker/login-action` con `GITHUB_TOKEN` y `build-push-action` para construir y subir imágenes.
+  - Tags: `:${sha}` (versionado inmutable) + `:latest` (tracking).
+  - Front pasa `NEXT_PUBLIC_API_URL` como `--build-arg` en build (ajustable por ambiente en despliegue).
+
+## QA y PROD (Railway)
+
+- QA (Railway)
+
+  - Servicios: `backend-qa` (8080), `frontend-qa` (3000)
+  - Imágenes: `:latest`
+  - Env: `DB_DSN=/data/employees.db`, `NEXT_PUBLIC_API_URL=https://<backend-qa>`
+  - Volúmenes: `/data` para backend
+  - Recursos: ~0.2 vCPU / 512MB (ejemplo)
+  - Autosleep: opcional
+
+- PROD (Railway)
+
+  - Proyecto separado `tp07-prod` (segregación)
+  - Servicios: `backend-prod`, `frontend-prod`
+  - Imágenes: `:prod` (promovidas desde GHCR)
+  - Env: `DB_DSN=/data/employees.db`, `NEXT_PUBLIC_API_URL=https://<backend-prod>`
+  - Volúmenes: `/data` para backend
+  - Recursos: backend 1 vCPU/1GB; frontend 0.5-1 vCPU/512MB-1GB; réplicas frontend si plan lo permite
+  - Autosleep: desactivado
+
+- CD a PROD (manual + approval)
+  - Workflow: `.github/workflows/release-prod.yml` (`workflow_dispatch` con `image_tag`)
+  - Usa ambiente `production` (requiere aprobación en GitHub → Environments)
+  - Pasos: login GHCR → retag `{sha}` como `:prod` → Railway CLI `up` para backend y frontend
+  - Secrets/vars requeridos: `RAILWAY_TOKEN` (secret), `RAILWAY_PROJECT_ID_PROD`, `RAILWAY_SERVICE_ID_BACK_PROD`, `RAILWAY_SERVICE_ID_FRONT_PROD` (vars)
+
+Justificación
+
+- Mismo servicio (Railway) facilita operación y coherencia entre QA/PROD.
+- Separación por proyecto/servicio + tags (`:latest`/`:prod`) aísla ambientes.
+- Aproval gate en GitHub Environments para control manual de releases.
+
 ## Criterios de cobertura (70%)
 
 - Umbral global 70% en front y back; balancea esfuerzo/valor pedagógico.

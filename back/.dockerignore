@@ -1,0 +1,21 @@
+# VCS
+.git
+
+# Go build caches
+/build
+/bin
+*.out
+
+# Editor
+.vscode
+.idea
+
+# Local DB
+employees.db
+/data
+
+# Tests
+cover.out
+cobertura.xml
+
+
