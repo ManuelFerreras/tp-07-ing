@@ -53,27 +53,9 @@ jobs:
           docker tag ${FRONT}:${TAG} ${FRONT}:prod
           docker push ${FRONT}:prod
 
-      - name: Install Railway CLI
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-      - name: Install Railway CLI (npm)
-        run: npm i -g @railway/cli
-
-      - name: Link Railway project
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      - name: Release note
         run: |
-          railway link --project "${{ vars.RAILWAY_PROJECT_ID_PROD }}"
-
-      - name: Redeploy backend-prod
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: |
-          railway up --ci --service "${{ vars.RAILWAY_SERVICE_ID_BACK_PROD }}" --detach
-
-      - name: Redeploy frontend-prod
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: |
-          railway up --ci --service "${{ vars.RAILWAY_SERVICE_ID_FRONT_PROD }}" --detach
+          echo "Images promoted to :prod. Ensure Railway services are set to 'Deploy from Docker Image' with image:"
+          echo " - ghcr.io/${{ steps.meta.outputs.owner_lc }}/${{ steps.meta.outputs.repo }}-back:prod"
+          echo " - ghcr.io/${{ steps.meta.outputs.owner_lc }}/${{ steps.meta.outputs.repo }}-front:prod"
+          echo "and enable 'Auto deploy on new image' so Railway redeploys automatically."
