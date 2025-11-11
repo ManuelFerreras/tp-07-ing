@@ -5,8 +5,8 @@ on:
     inputs:
       image_tag:
         description: "Image tag/commit SHA to promote to :prod"
-        required: true
-        default: "${{ github.sha }}"
+        required: false
+        default: ""
 
 jobs:
   release_prod:
@@ -16,6 +16,9 @@ jobs:
     permissions:
       contents: read
       packages: write
+    env:
+      INPUT_IMAGE_TAG: ${{ inputs.image_tag }}
+      GIT_SHA: ${{ github.sha }}
     steps:
       - uses: actions/checkout@v4
 
@@ -37,7 +40,7 @@ jobs:
       - name: Pull and retag backend image to :prod
         run: |
           BACK=ghcr.io/${{ steps.meta.outputs.owner_lc }}/${{ steps.meta.outputs.repo }}-back
-          TAG=${{ inputs.image_tag }}
+          TAG="${INPUT_IMAGE_TAG:-$GIT_SHA}"
           docker pull ${BACK}:${TAG}
           docker tag ${BACK}:${TAG} ${BACK}:prod
           docker push ${BACK}:prod
@@ -45,7 +48,7 @@ jobs:
       - name: Pull and retag frontend image to :prod
         run: |
           FRONT=ghcr.io/${{ steps.meta.outputs.owner_lc }}/${{ steps.meta.outputs.repo }}-front
-          TAG=${{ inputs.image_tag }}
+          TAG="${INPUT_IMAGE_TAG:-$GIT_SHA}"
           docker pull ${FRONT}:${TAG}
           docker tag ${FRONT}:${TAG} ${FRONT}:prod
           docker push ${FRONT}:prod
