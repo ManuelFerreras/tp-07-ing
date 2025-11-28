@@ -169,3 +169,15 @@ Justificación
 - Test Front: `cd front && npm run test:ci`
 - Test E2E: `cd e2e && FRONTEND_URL=http://localhost:3000 API_URL=http://localhost:8080 npx cypress run --headless`
 - Test Sonar: `cd back && make cover && go tool cover -func=cover.out`
+
+# Docker Image
+
+- docker login
+
+- docker build -t numita/tp-07-back:latest ./back
+
+- docker build -t numita/tp-07-front:latest ./front
+
+- docker push numita/tp-07-back:latest
+
+- docker push numita/tp-07-front:latest
