@@ -213,8 +213,12 @@ func (s *Store) ListPerformanceReviews(filter PerformanceReviewFilter) ([]Perfor
 		FROM performance_reviews r
 		JOIN employees e ON e.id = r.employee_id`)
 	args := make([]any, 0)
-	where, wArgs := buildReviewFilter(filter)
-	if where != "" {
+	whereClauses, wArgs := buildReviewFilter(filter)
+	if len(whereClauses) > 0 {
+		where, err := joinAllowedClauses(whereClauses, allowedReviewFilterClauses, " AND ")
+		if err != nil {
+			return nil, err
+		}
 		builder.WriteString(" WHERE ")
 		builder.WriteString(where)
 		args = append(args, wArgs...)
@@ -238,7 +242,25 @@ func (s *Store) ListPerformanceReviews(filter PerformanceReviewFilter) ([]Perfor
 	return result, rows.Err()
 }
 
-func buildReviewFilter(filter PerformanceReviewFilter) (string, []any) {
+var (
+	allowedReviewFilterClauses = map[string]struct{}{
+		"r.employee_id = ?": {},
+		"r.period = ?":      {},
+		"r.state = ?":       {},
+	}
+	allowedReviewUpdateClauses = map[string]struct{}{
+		"reviewer = ?":      {},
+		"rating = ?":        {},
+		"strengths = ?":     {},
+		"opportunities = ?": {},
+	}
+	allowedPayrollFilterClauses = map[string]struct{}{
+		"p.employee_id = ?": {},
+		"p.period = ?":      {},
+	}
+)
+
+func buildReviewFilter(filter PerformanceReviewFilter) ([]string, []any) {
 	clauses := make([]string, 0)
 	args := make([]any, 0)
 	if filter.EmployeeID > 0 {
@@ -253,7 +275,7 @@ func buildReviewFilter(filter PerformanceReviewFilter) (string, []any) {
 		clauses = append(clauses, "r.state = ?")
 		args = append(args, filter.State)
 	}
-	return strings.Join(clauses, " AND "), args
+	return clauses, args
 }
 
 func (s *Store) CreatePerformanceReview(input PerformanceReviewInput) (PerformanceReview, error) {
@@ -299,8 +321,12 @@ func (s *Store) UpdatePerformanceReview(id int64, update PerformanceReviewUpdate
 	if len(setClauses) == 0 {
 		return s.getPerformanceReviewByID(id)
 	}
+	setClauseString, err := joinAllowedClauses(setClauses, allowedReviewUpdateClauses, ", ")
+	if err != nil {
+		return PerformanceReview{}, err
+	}
 	args = append(args, id)
-	res, err := s.db.Exec(`UPDATE performance_reviews SET `+strings.Join(setClauses, ", ")+` WHERE id = ?`, args...)
+	res, err := s.db.Exec(`UPDATE performance_reviews SET `+setClauseString+` WHERE id = ?`, args...)
 	if err != nil {
 		return PerformanceReview{}, err
 	}
@@ -387,8 +413,12 @@ func (s *Store) ListReviewAggregates(filter PerformanceReviewFilter) ([]ReviewEm
 		FROM performance_reviews r
 		JOIN employees e ON e.id = r.employee_id`)
 	args := make([]any, 0)
-	where, wArgs := buildReviewFilter(filter)
-	if where != "" {
+	whereClauses, wArgs := buildReviewFilter(filter)
+	if len(whereClauses) > 0 {
+		where, err := joinAllowedClauses(whereClauses, allowedReviewFilterClauses, " AND ")
+		if err != nil {
+			return nil, err
+		}
 		builder.WriteString(" WHERE ")
 		builder.WriteString(where)
 		args = append(args, wArgs...)
@@ -420,8 +450,12 @@ func (s *Store) ListPayrollRecords(filter PayrollFilter) ([]PayrollRecord, error
 		FROM payroll_records p
 		JOIN employees e ON e.id = p.employee_id`)
 	args := make([]any, 0)
-	where, wArgs := buildPayrollFilter(filter)
-	if where != "" {
+	whereClauses, wArgs := buildPayrollFilter(filter)
+	if len(whereClauses) > 0 {
+		where, err := joinAllowedClauses(whereClauses, allowedPayrollFilterClauses, " AND ")
+		if err != nil {
+			return nil, err
+		}
 		builder.WriteString(" WHERE ")
 		builder.WriteString(where)
 		args = append(args, wArgs...)
@@ -445,7 +479,7 @@ func (s *Store) ListPayrollRecords(filter PayrollFilter) ([]PayrollRecord, error
 	return result, rows.Err()
 }
 
-func buildPayrollFilter(filter PayrollFilter) (string, []any) {
+func buildPayrollFilter(filter PayrollFilter) ([]string, []any) {
 	clauses := make([]string, 0)
 	args := make([]any, 0)
 	if filter.EmployeeID > 0 {
@@ -456,7 +490,7 @@ func buildPayrollFilter(filter PayrollFilter) (string, []any) {
 		clauses = append(clauses, "p.period = ?")
 		args = append(args, filter.Period)
 	}
-	return strings.Join(clauses, " AND "), args
+	return clauses, args
 }
 
 type PayrollRecordInput struct {
@@ -528,8 +562,12 @@ func (s *Store) PayrollTotals(filter PayrollFilter) ([]PayrollPeriodTotal, float
 	builder.WriteString(`SELECT p.period, SUM(p.net_pay) as total
 		FROM payroll_records p`)
 	args := make([]any, 0)
-	where, wArgs := buildPayrollFilter(filter)
-	if where != "" {
+	whereClauses, wArgs := buildPayrollFilter(filter)
+	if len(whereClauses) > 0 {
+		where, err := joinAllowedClauses(whereClauses, allowedPayrollFilterClauses, " AND ")
+		if err != nil {
+			return nil, 0, err
+		}
 		builder.WriteString(" WHERE ")
 		builder.WriteString(where)
 		args = append(args, wArgs...)
@@ -556,4 +594,16 @@ func (s *Store) PayrollTotals(filter PayrollFilter) ([]PayrollPeriodTotal, float
 		return nil, 0, err
 	}
 	return totalList, grandTotal, nil
+}
+
+func joinAllowedClauses(clauses []string, allowed map[string]struct{}, sep string) (string, error) {
+	if len(clauses) == 0 {
+		return "", nil
+	}
+	for _, clause := range clauses {
+		if _, ok := allowed[clause]; !ok {
+			return "", fmt.Errorf("unsupported clause %q", clause)
+		}
+	}
+	return strings.Join(clauses, sep), nil
 }

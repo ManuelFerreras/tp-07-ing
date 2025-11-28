@@ -388,6 +388,126 @@ func TestReviews_InvalidPayload(t *testing.T) {
 	}
 }
 
+func TestReviews_UpdateInvalidRating(t *testing.T) {
+	store, mux := setupTestServer(t)
+	defer store.Close()
+
+	emp, err := store.CreateEmployee("Alice")
+	if err != nil {
+		t.Fatalf("seed employee: %v", err)
+	}
+	if _, err := store.CreatePerformanceReview(PerformanceReviewInput{
+		EmployeeID: emp.ID,
+		Period:     "2024-Q4",
+		Reviewer:   "Boss",
+		Rating:     4,
+	}); err != nil {
+		t.Fatalf("seed review: %v", err)
+	}
+
+	resp := doJSON(t, mux, http.MethodPut, "/reviews/1", map[string]any{"rating": 6})
+	if resp.Code != http.StatusUnprocessableEntity {
+		t.Fatalf("expected 422 invalid rating, got %d", resp.Code)
+	}
+}
+
+func TestReviews_UpdateNotFound(t *testing.T) {
+	_, mux := setupTestServer(t)
+
+	resp := doJSON(t, mux, http.MethodPut, "/reviews/999", map[string]any{"rating": 4})
+	if resp.Code != http.StatusNotFound {
+		t.Fatalf("expected 404, got %d body %s", resp.Code, resp.Body.String())
+	}
+}
+
+func TestReviews_UpdateInternalError(t *testing.T) {
+	store, mux := setupTestServer(t)
+	_ = store.Close()
+
+	resp := doJSON(t, mux, http.MethodPut, "/reviews/1", map[string]any{"rating": 4})
+	if resp.Code != http.StatusInternalServerError {
+		t.Fatalf("expected 500, got %d", resp.Code)
+	}
+}
+
+func TestReviews_ListInvalidEmployeeID(t *testing.T) {
+	store, mux := setupTestServer(t)
+	defer store.Close()
+
+	resp := doJSON(t, mux, http.MethodGet, "/reviews?employeeId=abc", nil)
+	if resp.Code != http.StatusUnprocessableEntity {
+		t.Fatalf("expected 422 invalid employeeId, got %d", resp.Code)
+	}
+}
+
+func TestReviews_ListInternalError(t *testing.T) {
+	store, mux := setupTestServer(t)
+	_ = store.Close()
+
+	resp := doJSON(t, mux, http.MethodGet, "/reviews", nil)
+	if resp.Code != http.StatusInternalServerError {
+		t.Fatalf("expected 500, got %d", resp.Code)
+	}
+}
+
+func TestReviews_TransitionInvalidJSON(t *testing.T) {
+	store, mux := setupTestServer(t)
+	defer store.Close()
+
+	emp, err := store.CreateEmployee("Bob")
+	if err != nil {
+		t.Fatalf("seed employee: %v", err)
+	}
+	if _, err := store.CreatePerformanceReview(PerformanceReviewInput{
+		EmployeeID: emp.ID,
+		Period:     "2024-Q4",
+		Reviewer:   "Boss",
+		Rating:     4,
+	}); err != nil {
+		t.Fatalf("seed review: %v", err)
+	}
+
+	req := httptest.NewRequest(http.MethodPut, "/reviews/1/status", bytes.NewBufferString("{"))
+	req.Header.Set("Content-Type", "application/json")
+	rr := httptest.NewRecorder()
+	mux.ServeHTTP(rr, req)
+	if rr.Code != http.StatusUnprocessableEntity {
+		t.Fatalf("expected 422 invalid json, got %d", rr.Code)
+	}
+}
+
+func TestReviews_TransitionBlankState(t *testing.T) {
+	store, mux := setupTestServer(t)
+	defer store.Close()
+
+	emp, err := store.CreateEmployee("Carol")
+	if err != nil {
+		t.Fatalf("seed employee: %v", err)
+	}
+	if _, err := store.CreatePerformanceReview(PerformanceReviewInput{
+		EmployeeID: emp.ID,
+		Period:     "2024-Q4",
+		Reviewer:   "Boss",
+		Rating:     4,
+	}); err != nil {
+		t.Fatalf("seed review: %v", err)
+	}
+
+	resp := doJSON(t, mux, http.MethodPut, "/reviews/1/status", map[string]string{"state": "  "})
+	if resp.Code != http.StatusUnprocessableEntity {
+		t.Fatalf("expected 422 blank state, got %d", resp.Code)
+	}
+}
+
+func TestReviews_TransitionNotFound(t *testing.T) {
+	_, mux := setupTestServer(t)
+
+	resp := doJSON(t, mux, http.MethodPut, "/reviews/999/status", map[string]string{"state": ReviewStateSubmitted})
+	if resp.Code != http.StatusNotFound {
+		t.Fatalf("expected 404, got %d body %s", resp.Code, resp.Body.String())
+	}
+}
+
 type payrollList struct {
 	Items      []PayrollRecord           `json:"items"`
 	Aggregates payrollAggregatesResponse `json:"aggregates"`
@@ -450,5 +570,52 @@ func TestPayroll_InvalidPayload(t *testing.T) {
 	})
 	if resp.Code != http.StatusUnprocessableEntity {
 		t.Fatalf("expected 422, got %d", resp.Code)
+	}
+}
+
+func TestPayroll_CreateInvalidJSON(t *testing.T) {
+	store, mux := setupTestServer(t)
+	defer store.Close()
+
+	req := httptest.NewRequest(http.MethodPost, "/payroll", bytes.NewBufferString("{"))
+	req.Header.Set("Content-Type", "application/json")
+	rr := httptest.NewRecorder()
+	mux.ServeHTTP(rr, req)
+	if rr.Code != http.StatusUnprocessableEntity {
+		t.Fatalf("expected 422, got %d", rr.Code)
+	}
+}
+
+func TestPayroll_ListInvalidEmployeeID(t *testing.T) {
+	store, mux := setupTestServer(t)
+	defer store.Close()
+
+	resp := doJSON(t, mux, http.MethodGet, "/payroll?employeeId=abc", nil)
+	if resp.Code != http.StatusUnprocessableEntity {
+		t.Fatalf("expected 422 invalid employeeId, got %d", resp.Code)
+	}
+}
+
+func TestPayroll_ListInternalError(t *testing.T) {
+	store, mux := setupTestServer(t)
+	_ = store.Close()
+
+	resp := doJSON(t, mux, http.MethodGet, "/payroll", nil)
+	if resp.Code != http.StatusInternalServerError {
+		t.Fatalf("expected 500, got %d", resp.Code)
+	}
+}
+
+func TestPayroll_CreateInternalError(t *testing.T) {
+	store, mux := setupTestServer(t)
+	_ = store.Close()
+
+	resp := doJSON(t, mux, http.MethodPost, "/payroll", map[string]any{
+		"employeeId": 1,
+		"period":     "2024-01",
+		"baseSalary": 1,
+	})
+	if resp.Code != http.StatusInternalServerError {
+		t.Fatalf("expected 500, got %d", resp.Code)
 	}
 }
