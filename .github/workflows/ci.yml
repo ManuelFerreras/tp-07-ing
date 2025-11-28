@@ -1,0 +1,238 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+      - prod
+  pull_request:
+    branches:
+      - main
+      - dev
+
+env:
+  NODE_VERSION: "20.x"
+  GO_VERSION: "1.22.x"
+  FRONTEND_URL: "http://localhost:3000"
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: front
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: front/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Frontend tests
+        run: npm run test:ci
+
+      - name: Build Frontend (production)
+        run: npm run build
+
+      - name: Package Frontend Artifact (zip)
+        run: |
+          set -euo pipefail
+          ARTIFACT_DIR=dist-artifact
+          rm -rf "$ARTIFACT_DIR" frontend-dist.zip
+          mkdir -p "$ARTIFACT_DIR"
+          cp package.json package-lock.json "$ARTIFACT_DIR"/
+          for config in next.config.js next.config.ts next.config.mjs; do
+            if [ -f "$config" ]; then cp "$config" "$ARTIFACT_DIR"/; fi
+          done
+          if [ -d public ]; then cp -R public "$ARTIFACT_DIR"/; fi
+          cp -R .next "$ARTIFACT_DIR"/
+          npm ci --omit=dev --prefix "$ARTIFACT_DIR"
+          (cd "$ARTIFACT_DIR" && zip -r ../frontend-dist.zip .)
+
+      - name: Publish Frontend Release Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: front/frontend-dist.zip
+          if-no-files-found: error
+
+      - name: Publish Frontend Coverage (lcov)
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage-lcov
+          path: front/coverage/lcov.info
+          if-no-files-found: warn
+
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: back
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Backend tests and coverage gate
+        run: |
+          make cover
+          make check-cover
+
+      - name: Convert Go coverage to Cobertura
+        run: |
+          go install github.com/t-yuki/gocover-cobertura@latest
+          "$HOME"/go/bin/gocover-cobertura < cover.out > cobertura.xml
+
+      - name: Publish Backend Coverage (cobertura)
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage-cobertura
+          path: back/cobertura.xml
+          if-no-files-found: warn
+
+      - name: Package Backend Artifact (zip)
+        run: |
+          set -euo pipefail
+          ARTIFACT_DIR=dist
+          rm -rf "$ARTIFACT_DIR" backend-dist.zip
+          mkdir -p "$ARTIFACT_DIR"
+          go build -o "$ARTIFACT_DIR/server" .
+          cp employees.db "$ARTIFACT_DIR"/
+          if [ -f .env ]; then cp .env "$ARTIFACT_DIR"/; fi
+          (cd "$ARTIFACT_DIR" && zip -r ../backend-dist.zip .)
+
+      - name: Publish Backend Release Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-dist
+          path: back/backend-dist.zip
+          if-no-files-found: error
+
+  sonar:
+    runs-on: ubuntu-latest
+    needs:
+      - frontend
+      - backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: https://sonarcloud.io
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs:
+      - frontend
+      - backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: e2e/package-lock.json
+
+      - name: Download Backend Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-dist
+          path: artifacts/backend
+
+      - name: Unpack Backend Artifact
+        run: |
+          set -euo pipefail
+          rm -rf release/backend
+          mkdir -p release/backend
+          unzip -o artifacts/backend/backend-dist.zip -d release/backend
+          chmod +x release/backend/server || true
+
+      - name: Download Frontend Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: artifacts/frontend
+
+      - name: Unpack Frontend Artifact
+        run: |
+          set -euo pipefail
+          rm -rf release/frontend
+          mkdir -p release/frontend
+          unzip -o artifacts/frontend/frontend-dist.zip -d release/frontend
+
+      - name: Start Backend Artifact (localhost:8080)
+        working-directory: release/backend
+        run: |
+          nohup bash -c 'DB_DSN=./employees.db ./server > ../../back_server.log 2>&1' &
+          echo $! > ../../backend.pid
+          sleep 2
+
+      - name: Start Frontend Artifact (localhost:3000)
+        working-directory: release/frontend
+        run: |
+          nohup bash -c 'NEXT_PUBLIC_API_URL=http://localhost:8080 npm run start > ../../front_server.log 2>&1' &
+          echo $! > ../../frontend.pid
+          sleep 3
+
+      - name: Install E2E dependencies
+        working-directory: e2e
+        run: npm ci
+
+      - name: Run Cypress E2E
+        working-directory: e2e
+        env:
+          FRONTEND_URL: ${{ env.FRONTEND_URL }}
+        run: npx cypress run --headless
+
+      - name: Publish E2E Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-results
+          path: e2e/cypress/results/**/*.xml
+          if-no-files-found: warn
+
+      - name: Publish Cypress Videos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-videos
+          path: e2e/cypress/videos
+          if-no-files-found: warn
+
+      - name: Publish Cypress Screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-screenshots
+          path: e2e/cypress/screenshots
+          if-no-files-found: warn
+
+      - name: Stop services
+        if: always()
+        run: |
+          if [ -f backend.pid ]; then kill "$(cat backend.pid)" || true; fi
+          if [ -f frontend.pid ]; then kill "$(cat frontend.pid)" || true; fi

@@ -1,6 +1,6 @@
 - aplicacion muy trivial, agregar mas funcionalidades. DONE
 - agregar pruebas de cypress mas complejas. DONE
-- que los tests sean sobre los contenedores, no sobre el ambiente local.
+- que los tests sean sobre los contenedores, no sobre el ambiente local. CHECKING
 
 - que funcionen ambos entornos (qa y prod).
 
@@ -10,4 +10,4 @@
 Adicionales:
 
 - Docker Compose. Entender toda la arquitectura de docker.
-- El zip de PROD debe ser el MISMO que QA.
+- El zip de PROD debe ser el MISMO que QA. CHECKING
