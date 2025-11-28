@@ -79,7 +79,7 @@ export default function EmployeesPage() {
               <Heading size="lg" color="brand.700">
                 Gestión de empleados
               </Heading>
-              <Text color="gray.600">Creá o actualizá personas dentro del equipo.</Text>
+              <Text color="gray.600">Creá o actualizá personas dentro del equipo. Asegura que se actualice.</Text>
             </div>
             <Button as={Link} href="/" variant="ghost" colorScheme="blue">
               ← Volver al inicio
