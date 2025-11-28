@@ -20,6 +20,8 @@ import {
 } from "@chakra-ui/react";
 import PerformanceReviewForm, { ReviewFormValues } from "../../components/PerformanceReviewForm";
 import ReviewList from "../../components/ReviewList";
+import FiltersCard from "../../components/FiltersCard";
+import EmployeeFilterSelect from "../../components/EmployeeFilterSelect";
 import {
   Employee,
   PerformanceReview,
@@ -129,48 +131,27 @@ export default function ReviewsPage() {
             </CardBody>
           </Card>
 
-          <Card>
-            <CardBody>
-              <Heading size="md" mb={4}>
-                Filtros
-              </Heading>
-              <Stack direction={{ base: "column", md: "row" }} spacing={4}>
-                <Box flex={1}>
-                  <Text fontWeight="semibold" mb={1}>
-                    Empleado
-                  </Text>
-                  <Select
-                    value={filters.employeeId}
-                    onChange={(e) => setFilters((prev) => ({ ...prev, employeeId: e.target.value }))}
-                  >
-                    <option value="">Todos</option>
-                    {employees.map((emp) => (
-                      <option key={emp.id} value={emp.id}>
-                        {emp.name}
-                      </option>
-                    ))}
-                  </Select>
-                </Box>
-                <Box flex={1}>
-                  <Text fontWeight="semibold" mb={1}>
-                    Estado
-                  </Text>
-                  <Select
-                    value={filters.state}
-                    onChange={(e) => setFilters((prev) => ({ ...prev, state: e.target.value }))}
-                  >
-                    <option value="">Todos</option>
-                    <option value="draft">Borrador</option>
-                    <option value="submitted">En revisión</option>
-                    <option value="approved">Aprobado</option>
-                  </Select>
-                </Box>
-                <Button onClick={() => setFilters({ employeeId: "", state: "" })} alignSelf="flex-end">
-                  Limpiar
-                </Button>
-              </Stack>
-            </CardBody>
-          </Card>
+          <FiltersCard>
+            <EmployeeFilterSelect
+              employees={employees}
+              value={filters.employeeId}
+              onChange={(value) => setFilters((prev) => ({ ...prev, employeeId: value }))}
+            />
+            <Box flex={1}>
+              <Text fontWeight="semibold" mb={1}>
+                Estado
+              </Text>
+              <Select value={filters.state} onChange={(e) => setFilters((prev) => ({ ...prev, state: e.target.value }))}>
+                <option value="">Todos</option>
+                <option value="draft">Borrador</option>
+                <option value="submitted">En revisión</option>
+                <option value="approved">Aprobado</option>
+              </Select>
+            </Box>
+            <Button onClick={() => setFilters({ employeeId: "", state: "" })} alignSelf="flex-end">
+              Limpiar
+            </Button>
+          </FiltersCard>
 
           <Stack spacing={3} data-cy="reviews-summary">
             <Heading size="md">Resumen por empleado</Heading>

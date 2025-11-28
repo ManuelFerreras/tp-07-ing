@@ -29,6 +29,8 @@ import {
   Input,
 } from "@chakra-ui/react";
 import PayrollForm, { PayrollFormValues } from "../../components/PayrollForm";
+import FiltersCard from "../../components/FiltersCard";
+import EmployeeFilterSelect from "../../components/EmployeeFilterSelect";
 import {
   Employee,
   PayrollListResponse,
@@ -116,43 +118,22 @@ export default function PayrollPage() {
             </CardBody>
           </Card>
 
-          <Card>
-            <CardBody>
-              <Heading size="md" mb={4}>
-                Filtros
-              </Heading>
-              <Stack direction={{ base: "column", md: "row" }} spacing={4}>
-                <Box flex={1}>
-                  <Text fontWeight="semibold" mb={1}>
-                    Empleado
-                  </Text>
-                  <Select
-                    value={filters.employeeId}
-                    onChange={(e) => setFilters((prev) => ({ ...prev, employeeId: e.target.value }))}
-                  >
-                    <option value="">Todos</option>
-                    {employees.map((emp) => (
-                      <option key={emp.id} value={emp.id}>
-                        {emp.name}
-                      </option>
-                    ))}
-                  </Select>
-                </Box>
-                <Box flex={1}>
-                  <Text fontWeight="semibold" mb={1}>
-                    Período (YYYY-MM)
-                  </Text>
-                  <Input
-                    value={filters.period}
-                    onChange={(e) => setFilters((prev) => ({ ...prev, period: e.target.value }))}
-                  />
-                </Box>
-                <Button onClick={() => setFilters({ employeeId: "", period: "" })} alignSelf="flex-end">
-                  Limpiar
-                </Button>
-              </Stack>
-            </CardBody>
-          </Card>
+          <FiltersCard>
+            <EmployeeFilterSelect
+              employees={employees}
+              value={filters.employeeId}
+              onChange={(value) => setFilters((prev) => ({ ...prev, employeeId: value }))}
+            />
+            <Box flex={1}>
+              <Text fontWeight="semibold" mb={1}>
+                Período (YYYY-MM)
+              </Text>
+              <Input value={filters.period} onChange={(e) => setFilters((prev) => ({ ...prev, period: e.target.value }))} />
+            </Box>
+            <Button onClick={() => setFilters({ employeeId: "", period: "" })} alignSelf="flex-end">
+              Limpiar
+            </Button>
+          </FiltersCard>
 
           <Stack spacing={3}>
             <Heading size="md">Totales por período</Heading>

@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="23" failures="0" errors="0" time="1.882">
-  <testsuite name="PerformanceReviewForm" errors="0" failures="0" skipped="0" timestamp="2025-11-28T04:58:28" time="0.637" tests="3">
-    <testcase classname="PerformanceReviewForm validates required fields in create mode" name="PerformanceReviewForm validates required fields in create mode" time="0.15">
+<testsuites name="jest tests" tests="23" failures="0" errors="0" time="2.093">
+  <testsuite name="PerformanceReviewForm" errors="0" failures="0" skipped="0" timestamp="2025-11-28T05:40:17" time="0.732" tests="3">
+    <testcase classname="PerformanceReviewForm validates required fields in create mode" name="PerformanceReviewForm validates required fields in create mode" time="0.129">
     </testcase>
-    <testcase classname="PerformanceReviewForm submits sanitized values" name="PerformanceReviewForm submits sanitized values" time="0.06">
+    <testcase classname="PerformanceReviewForm submits sanitized values" name="PerformanceReviewForm submits sanitized values" time="0.129">
     </testcase>
-    <testcase classname="PerformanceReviewForm supports edit mode without employee selector" name="PerformanceReviewForm supports edit mode without employee selector" time="0.027">
-    </testcase>
-  </testsuite>
-  <testsuite name="PayrollForm" errors="0" failures="0" skipped="0" timestamp="2025-11-28T04:58:28" time="0.302" tests="2">
-    <testcase classname="PayrollForm requires employee and period" name="PayrollForm requires employee and period" time="0.077">
-    </testcase>
-    <testcase classname="PayrollForm submits numeric values and shows preview" name="PayrollForm submits numeric values and shows preview" time="0.067">
+    <testcase classname="PerformanceReviewForm supports edit mode without employee selector" name="PerformanceReviewForm supports edit mode without employee selector" time="0.035">
     </testcase>
   </testsuite>
-  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2025-11-28T04:58:28" time="0.272" tests="3">
-    <testcase classname=" renders and validates required" name=" renders and validates required" time="0.059">
+  <testsuite name="PayrollForm" errors="0" failures="0" skipped="0" timestamp="2025-11-28T05:40:18" time="0.39" tests="2">
+    <testcase classname="PayrollForm requires employee and period" name="PayrollForm requires employee and period" time="0.13">
     </testcase>
-    <testcase classname=" submit successful" name=" submit successful" time="0.021">
-    </testcase>
-    <testcase classname=" shows error feedback" name=" shows error feedback" time="0.042">
+    <testcase classname="PayrollForm submits numeric values and shows preview" name="PayrollForm submits numeric values and shows preview" time="0.081">
     </testcase>
   </testsuite>
-  <testsuite name="HomePage" errors="0" failures="0" skipped="0" timestamp="2025-11-28T04:58:29" time="0.251" tests="1">
-    <testcase classname="HomePage shows cards for each module" name="HomePage shows cards for each module" time="0.092">
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2025-11-28T05:40:18" time="0.325" tests="3">
+    <testcase classname=" renders and validates required" name=" renders and validates required" time="0.063">
+    </testcase>
+    <testcase classname=" submit successful" name=" submit successful" time="0.023">
+    </testcase>
+    <testcase classname=" shows error feedback" name=" shows error feedback" time="0.075">
     </testcase>
   </testsuite>
-  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2025-11-28T04:58:29" time="0.096" tests="14">
-    <testcase classname=" getEmployees happy path" name=" getEmployees happy path" time="0.002">
+  <testsuite name="HomePage" errors="0" failures="0" skipped="0" timestamp="2025-11-28T05:40:18" time="0.278" tests="1">
+    <testcase classname="HomePage shows cards for each module" name="HomePage shows cards for each module" time="0.095">
+    </testcase>
+  </testsuite>
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2025-11-28T05:40:19" time="0.08" tests="14">
+    <testcase classname=" getEmployees happy path" name=" getEmployees happy path" time="0.004">
     </testcase>
     <testcase classname=" createEmployee happy path" name=" createEmployee happy path" time="0.001">
     </testcase>
@@ -45,13 +45,13 @@
     </testcase>
     <testcase classname=" getReviews sends filter params" name=" getReviews sends filter params" time="0.001">
     </testcase>
-    <testcase classname=" createReview trims data before sending" name=" createReview trims data before sending" time="0.001">
+    <testcase classname=" createReview trims data before sending" name=" createReview trims data before sending" time="0">
     </testcase>
-    <testcase classname=" updateReview hits endpoint with payload" name=" updateReview hits endpoint with payload" time="0.001">
+    <testcase classname=" updateReview hits endpoint with payload" name=" updateReview hits endpoint with payload" time="0">
     </testcase>
     <testcase classname=" transitionReview updates status" name=" transitionReview updates status" time="0">
     </testcase>
-    <testcase classname=" getPayroll builds query string" name=" getPayroll builds query string" time="0.001">
+    <testcase classname=" getPayroll builds query string" name=" getPayroll builds query string" time="0">
     </testcase>
     <testcase classname=" createPayroll normalizes optional numbers" name=" createPayroll normalizes optional numbers" time="0">
     </testcase>
