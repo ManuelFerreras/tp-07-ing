@@ -19,8 +19,6 @@ env:
   NODE_VERSION: "20.x"
   GO_VERSION: "1.22.x"
   FRONTEND_URL: "http://localhost:3000"
-  FRONT_IMAGE: ghcr.io/${{ github.repository_owner }}/tp-07-ing-front
-  BACK_IMAGE: ghcr.io/${{ github.repository_owner }}/tp-07-ing-back
 
 jobs:
   frontend:
@@ -277,6 +275,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set image names
+        run: |
+          OWNER_LC=$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')
+          REPO_NAME=${GITHUB_REPOSITORY#*/}
+          echo "FRONT_IMAGE=ghcr.io/${OWNER_LC}/${REPO_NAME}-front" >> "$GITHUB_ENV"
+          echo "BACK_IMAGE=ghcr.io/${OWNER_LC}/${REPO_NAME}-back" >> "$GITHUB_ENV"
+
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
@@ -310,6 +315,13 @@ jobs:
     env:
       IMAGE_SHA_TAG: sha-${{ github.sha }}
     steps:
+      - name: Set image names
+        run: |
+          OWNER_LC=$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')
+          REPO_NAME=${GITHUB_REPOSITORY#*/}
+          echo "FRONT_IMAGE=ghcr.io/${OWNER_LC}/${REPO_NAME}-front" >> "$GITHUB_ENV"
+          echo "BACK_IMAGE=ghcr.io/${OWNER_LC}/${REPO_NAME}-back" >> "$GITHUB_ENV"
+
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
