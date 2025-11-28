@@ -135,9 +135,6 @@ jobs:
 
   publish_images:
     runs-on: ubuntu-latest
-    needs:
-      - backend
-      - frontend
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     env:
       IMAGE_SHA_TAG: sha-${{ github.sha }}
@@ -202,7 +199,7 @@ jobs:
       - publish_images
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     environment:
-      name: prod
+      name: dev
     env:
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_DEV_TOKEN }}
     steps:
