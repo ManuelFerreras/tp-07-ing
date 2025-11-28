@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="2.685" tests="2" failures="0">
+  <testsuite name="Root Suite" timestamp="2025-11-28T04:59:00" tests="0" file="cypress/e2e/error_handling.cy.ts" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Error handling" timestamp="2025-11-28T04:59:00" tests="2" time="2.675" failures="0">
+    <testcase name="Error handling shows validation error 422" time="1.067" classname="shows validation error 422">
+    </testcase>
+    <testcase name="Error handling shows generic error 500" time="1.553" classname="shows generic error 500">
+    </testcase>
+  </testsuite>
+</testsuites>

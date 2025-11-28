@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="7.551" tests="1" failures="1">
+  <testsuite name="Root Suite" timestamp="2025-11-28T04:53:40" tests="0" file="cypress/e2e/reviews.cy.ts" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Performance reviews flow" timestamp="2025-11-28T04:53:40" tests="1" time="7.541" failures="1">
+    <testcase name="Performance reviews flow creates and approves a review with visible summaries" time="0.000" classname="creates and approves a review with visible summaries">
+      <failure message="Timed out retrying after 4000ms: Expected to find content: &apos;Eval User 1764305620960&apos; within the selector: &apos;article&apos; but never did." type="AssertionError"><![CDATA[AssertionError: Timed out retrying after 4000ms: Expected to find content: 'Eval User 1764305620960' within the selector: 'article' but never did.
+    at Context.eval (webpack://tp07-e2e/./cypress/e2e/reviews.cy.ts:29:0)]]></failure>
+    </testcase>
+  </testsuite>
+</testsuites>

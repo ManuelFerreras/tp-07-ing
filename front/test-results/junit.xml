@@ -1,29 +1,89 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="10" failures="0" errors="0" time="1.033">
-  <testsuite name="HomePage" errors="0" failures="0" skipped="0" timestamp="2025-11-04T19:52:13" time="0.542" tests="1">
-    <testcase classname="HomePage renders heading and link to employees" name="HomePage renders heading and link to employees" time="0.031">
+<testsuites name="jest tests" tests="31" failures="0" errors="0" time="2.471">
+  <testsuite name="ReviewList" errors="0" failures="0" skipped="0" timestamp="2025-11-28T05:49:00" time="1.58" tests="2">
+    <testcase classname="ReviewList shows empty state when not loading" name="ReviewList shows empty state when not loading" time="0.101">
+    </testcase>
+    <testcase classname="ReviewList renders reviews and triggers callbacks" name="ReviewList renders reviews and triggers callbacks" time="0.09">
     </testcase>
   </testsuite>
-  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2025-11-04T19:52:14" time="0.137" tests="3">
-    <testcase classname=" renders and validates required" name=" renders and validates required" time="0.024">
-    </testcase>
-    <testcase classname=" submit successful" name=" submit successful" time="0.006">
-    </testcase>
-    <testcase classname=" shows error feedback" name=" shows error feedback" time="0.009">
+  <testsuite name="EmployeesPage" errors="0" failures="0" skipped="0" timestamp="2025-11-28T05:49:00" time="1.615" tests="1">
+    <testcase classname="EmployeesPage loads list and supports create/update/delete flows" name="EmployeesPage loads list and supports create/update/delete flows" time="0.275">
     </testcase>
   </testsuite>
-  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2025-11-04T19:52:14" time="0.065" tests="6">
+  <testsuite name="Providers wrapper" errors="0" failures="0" skipped="0" timestamp="2025-11-28T05:49:00" time="1.596" tests="1">
+    <testcase classname="Providers wrapper renders its children inside Chakra context" name="Providers wrapper renders its children inside Chakra context" time="0.145">
+    </testcase>
+  </testsuite>
+  <testsuite name="EmployeeFilterSelect" errors="0" failures="0" skipped="0" timestamp="2025-11-28T05:49:00" time="1.633" tests="1">
+    <testcase classname="EmployeeFilterSelect lists employees and emits changes" name="EmployeeFilterSelect lists employees and emits changes" time="0.184">
+    </testcase>
+  </testsuite>
+  <testsuite name="HomePage" errors="0" failures="0" skipped="0" timestamp="2025-11-28T05:49:00" time="1.722" tests="1">
+    <testcase classname="HomePage shows cards for each module" name="HomePage shows cards for each module" time="0.295">
+    </testcase>
+  </testsuite>
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2025-11-28T05:49:00" time="1.789" tests="3">
+    <testcase classname=" renders and validates required" name=" renders and validates required" time="0.202">
+    </testcase>
+    <testcase classname=" submit successful" name=" submit successful" time="0.069">
+    </testcase>
+    <testcase classname=" shows error feedback" name=" shows error feedback" time="0.104">
+    </testcase>
+  </testsuite>
+  <testsuite name="PerformanceReviewForm" errors="0" failures="0" skipped="0" timestamp="2025-11-28T05:49:00" time="1.816" tests="3">
+    <testcase classname="PerformanceReviewForm validates required fields in create mode" name="PerformanceReviewForm validates required fields in create mode" time="0.201">
+    </testcase>
+    <testcase classname="PerformanceReviewForm submits sanitized values" name="PerformanceReviewForm submits sanitized values" time="0.169">
+    </testcase>
+    <testcase classname="PerformanceReviewForm supports edit mode without employee selector" name="PerformanceReviewForm supports edit mode without employee selector" time="0.054">
+    </testcase>
+  </testsuite>
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2025-11-28T05:49:02" time="0.179" tests="14">
     <testcase classname=" getEmployees happy path" name=" getEmployees happy path" time="0.001">
     </testcase>
     <testcase classname=" createEmployee happy path" name=" createEmployee happy path" time="0.001">
     </testcase>
     <testcase classname=" updateEmployee happy path" name=" updateEmployee happy path" time="0">
     </testcase>
-    <testcase classname=" createEmployee propagates 422 error from server" name=" createEmployee propagates 422 error from server" time="0.002">
+    <testcase classname=" createEmployee propagates 422 error from server" name=" createEmployee propagates 422 error from server" time="0.015">
     </testcase>
-    <testcase classname=" getEmployees error path propagates message" name=" getEmployees error path propagates message" time="0.001">
+    <testcase classname=" getEmployees error path propagates message" name=" getEmployees error path propagates message" time="0">
     </testcase>
     <testcase classname=" updateEmployee error path propagates message" name=" updateEmployee error path propagates message" time="0">
+    </testcase>
+    <testcase classname=" deleteEmployee hits endpoint with delete verb" name=" deleteEmployee hits endpoint with delete verb" time="0.001">
+    </testcase>
+    <testcase classname=" deleteEmployee propagates API error" name=" deleteEmployee propagates API error" time="0.002">
+    </testcase>
+    <testcase classname=" getReviews sends filter params" name=" getReviews sends filter params" time="0.002">
+    </testcase>
+    <testcase classname=" createReview trims data before sending" name=" createReview trims data before sending" time="0.001">
+    </testcase>
+    <testcase classname=" updateReview hits endpoint with payload" name=" updateReview hits endpoint with payload" time="0.001">
+    </testcase>
+    <testcase classname=" transitionReview updates status" name=" transitionReview updates status" time="0">
+    </testcase>
+    <testcase classname=" getPayroll builds query string" name=" getPayroll builds query string" time="0">
+    </testcase>
+    <testcase classname=" createPayroll normalizes optional numbers" name=" createPayroll normalizes optional numbers" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="ReviewsPage" errors="0" failures="0" skipped="0" timestamp="2025-11-28T05:49:00" time="1.831" tests="1">
+    <testcase classname="ReviewsPage handles create, update, advance and filters" name="ReviewsPage handles create, update, advance and filters" time="0.42">
+    </testcase>
+  </testsuite>
+  <testsuite name="PayrollForm" errors="0" failures="0" skipped="0" timestamp="2025-11-28T05:49:00" time="1.848" tests="2">
+    <testcase classname="PayrollForm requires employee and period" name="PayrollForm requires employee and period" time="0.222">
+    </testcase>
+    <testcase classname="PayrollForm submits numeric values and shows preview" name="PayrollForm submits numeric values and shows preview" time="0.216">
+    </testcase>
+  </testsuite>
+  <testsuite name="PayrollPage" errors="0" failures="0" skipped="0" timestamp="2025-11-28T05:49:00" time="1.869" tests="1">
+    <testcase classname="PayrollPage filters and creates payroll records" name="PayrollPage filters and creates payroll records" time="0.449">
+    </testcase>
+  </testsuite>
+  <testsuite name="FiltersCard" errors="0" failures="0" skipped="0" timestamp="2025-11-28T05:49:02" time="0.299" tests="1">
+    <testcase classname="FiltersCard renders heading and children content" name="FiltersCard renders heading and children content" time="0.034">
     </testcase>
   </testsuite>
 </testsuites>

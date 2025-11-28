@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="1.316" tests="1" failures="0">
+  <testsuite name="Root Suite" timestamp="2025-11-28T04:58:54" tests="0" file="cypress/e2e/create_employee.cy.ts" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Create employee" timestamp="2025-11-28T04:58:54" tests="1" time="1.308" failures="0">
+    <testcase name="Create employee creates a new employee and shows it as last row" time="1.282" classname="creates a new employee and shows it as last row">
+    </testcase>
+  </testsuite>
+</testsuites>
