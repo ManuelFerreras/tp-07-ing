@@ -31,15 +31,28 @@ func main() {
 	}
 }
 
-// withCORS disables CORS entirely by returning wildcard headers for every request.
+// withCORS disables CORS entirely by returning permissive headers for every request.
 func withCORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Wildcard origin/header/method values effectively disable CORS checks.
+		const defaultMethods = "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+
+		// Always allow every origin.
 		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH")
-		w.Header().Set("Access-Control-Allow-Headers", "*")
-		w.Header().Set("Access-Control-Max-Age", "86400")
 		w.Header().Set("Access-Control-Expose-Headers", "*")
+		w.Header().Set("Access-Control-Max-Age", "86400")
+
+		// Mirror the requested headers/methods when present so browsers never block.
+		if reqHeaders := r.Header.Get("Access-Control-Request-Headers"); reqHeaders != "" {
+			w.Header().Set("Access-Control-Allow-Headers", reqHeaders)
+		} else {
+			w.Header().Set("Access-Control-Allow-Headers", "*")
+		}
+
+		if reqMethod := r.Header.Get("Access-Control-Request-Method"); reqMethod != "" {
+			w.Header().Set("Access-Control-Allow-Methods", reqMethod)
+		} else {
+			w.Header().Set("Access-Control-Allow-Methods", defaultMethods)
+		}
 
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusNoContent)

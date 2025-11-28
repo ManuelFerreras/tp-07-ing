@@ -329,18 +329,10 @@ jobs:
 
       - name: Redeploy Backend on Railway DEV
         run: |
-          railway link \
-            --project "${RAILWAY_DEV_PROJECT_ID}" \
-            --environment "${RAILWAY_DEV_ENV}" \
-            --service "${RAILWAY_DEV_BACKEND_SERVICE_ID}"
           railway redeploy --service "${RAILWAY_DEV_BACKEND_SERVICE_ID}" --yes
 
       - name: Redeploy Frontend on Railway DEV
         run: |
-          railway link \
-            --project "${RAILWAY_DEV_PROJECT_ID}" \
-            --environment "${RAILWAY_DEV_ENV}" \
-            --service "${RAILWAY_DEV_FRONTEND_SERVICE_ID}"
           railway redeploy --service "${RAILWAY_DEV_FRONTEND_SERVICE_ID}" --yes
 
   promote_prod:
@@ -387,16 +379,8 @@ jobs:
 
       - name: Redeploy Backend on Railway PROD
         run: |
-          railway link \
-            --project "${RAILWAY_PROD_PROJECT_ID}" \
-            --environment "${RAILWAY_PROD_ENV}" \
-            --service "${RAILWAY_PROD_BACKEND_SERVICE_ID}"
           railway redeploy --service "${RAILWAY_PROD_BACKEND_SERVICE_ID}" --yes
 
       - name: Redeploy Frontend on Railway PROD
         run: |
-          railway link \
-            --project "${RAILWAY_PROD_PROJECT_ID}" \
-            --environment "${RAILWAY_PROD_ENV}" \
-            --service "${RAILWAY_PROD_FRONTEND_SERVICE_ID}"
           railway redeploy --service "${RAILWAY_PROD_FRONTEND_SERVICE_ID}" --yes
