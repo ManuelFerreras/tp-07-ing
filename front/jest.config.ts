@@ -1,26 +1,26 @@
-import type { Config } from 'jest';
+import type { Config } from "jest";
 
 const config: Config = {
-  testEnvironment: 'jsdom',
-  roots: ['<rootDir>/src', '<rootDir>/__tests__'],
-  setupFiles: ['<rootDir>/jest.setup.ts'],
-  setupFilesAfterEnv: ['@testing-library/jest-dom'],
+  testEnvironment: "jsdom",
+  roots: ["<rootDir>/src", "<rootDir>/__tests__"],
+  setupFiles: ["<rootDir>/jest.setup.ts"],
+  setupFilesAfterEnv: ["@testing-library/jest-dom"],
   transform: {
-    '^.+\\.(ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }],
+    "^.+\\.(ts|tsx)$": ["babel-jest", { presets: ["next/babel"] }],
   },
   collectCoverage: true,
-  coverageReporters: ['lcov', 'text-summary'],
+  coverageReporters: ["lcov", "text-summary"],
   reporters: [
-    'default',
+    "default",
     [
-      'jest-junit',
+      "jest-junit",
       {
-        outputDirectory: 'test-results',
-        outputName: 'junit.xml',
+        outputDirectory: "test-results",
+        outputName: "junit.xml",
       },
     ],
   ],
-  moduleFileExtensions: ['ts', 'tsx', 'js'],
+  moduleFileExtensions: ["ts", "tsx", "js"],
   coverageThreshold: {
     global: {
       branches: 70,
@@ -32,5 +32,3 @@ const config: Config = {
 };
 
 export default config;
-
-
