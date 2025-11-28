@@ -54,7 +54,9 @@ export type PayrollListResponse = {
 function resolveApiBase(): string {
   if (typeof window !== "undefined") {
     const runtime = (window as any).__ENV__?.NEXT_PUBLIC_API_URL;
-    if (runtime) return runtime;
+    if (runtime && !runtime.includes("__NEXT_PUBLIC_API_URL__")) {
+      return runtime;
+    }
   }
 
   const fromProcess =
