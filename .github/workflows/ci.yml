@@ -135,6 +135,9 @@ jobs:
 
   publish_images:
     runs-on: ubuntu-latest
+    needs:
+      - backend
+      - frontend
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     env:
       IMAGE_SHA_TAG: sha-${{ github.sha }}
