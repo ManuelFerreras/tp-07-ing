@@ -51,8 +51,23 @@ export type PayrollListResponse = {
   };
 };
 
+function resolveApiBase(): string {
+  if (typeof window !== "undefined") {
+    const runtime = (window as any).__ENV__?.NEXT_PUBLIC_API_URL;
+    if (runtime) return runtime;
+  }
+
+  const fromProcess =
+    process.env.NEXT_PUBLIC_API_URL ||
+    process.env["NEXT_PUBLIC_API_URL"] ||
+    process.env.API_URL ||
+    "http://localhost:8080";
+
+  return fromProcess;
+}
+
 function apiUrl(path: string): string {
-  const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+  const base = resolveApiBase();
   return `${base}${path}`;
 }
 

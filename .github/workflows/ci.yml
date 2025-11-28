@@ -57,6 +57,7 @@ jobs:
             if [ -f "$config" ]; then cp "$config" "$ARTIFACT_DIR"/; fi
           done
           if [ -d public ]; then cp -R public "$ARTIFACT_DIR"/; fi
+          if [ -d scripts ]; then cp -R scripts "$ARTIFACT_DIR"/; fi
           cp -R .next "$ARTIFACT_DIR"/
           npm ci --omit=dev --prefix "$ARTIFACT_DIR"
           # -y preserves symlinks (e.g. node_modules/.bin/next) so runtime start works after unzip.
