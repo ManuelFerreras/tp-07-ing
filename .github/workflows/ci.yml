@@ -123,7 +123,6 @@ jobs:
           rm -rf "$ARTIFACT_DIR" backend-dist.zip
           mkdir -p "$ARTIFACT_DIR"
           go build -o "$ARTIFACT_DIR/server" .
-          cp employees.db "$ARTIFACT_DIR"/
           if [ -f .env ]; then cp .env "$ARTIFACT_DIR"/; fi
           (cd "$ARTIFACT_DIR" && zip -r ../backend-dist.zip .)
 
@@ -319,6 +318,8 @@ jobs:
     needs:
       - publish_images
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment:
+      name: prod
     env:
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_DEV_TOKEN }}
     steps:
