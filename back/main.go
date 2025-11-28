@@ -31,20 +31,15 @@ func main() {
 	}
 }
 
-// withCORS attaches permissive CORS headers so the API can be called from any UI host.
+// withCORS disables CORS entirely by returning wildcard headers for every request.
 func withCORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		origin := r.Header.Get("Origin")
-		if origin == "" {
-			origin = "*"
-		}
-
-		// Allow requests from any origin; Railway terminates TLS so this is safe for this project.
-		w.Header().Set("Access-Control-Allow-Origin", origin)
-		w.Header().Set("Vary", "Origin")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept")
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		// Wildcard origin/header/method values effectively disable CORS checks.
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH")
+		w.Header().Set("Access-Control-Allow-Headers", "*")
+		w.Header().Set("Access-Control-Max-Age", "86400")
+		w.Header().Set("Access-Control-Expose-Headers", "*")
 
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusNoContent)
