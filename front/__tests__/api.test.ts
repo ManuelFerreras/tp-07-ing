@@ -42,7 +42,7 @@ test("getEmployees happy path", async () => {
     mockResponse([{ id: 1, name: "A" }])
   );
   const res = await getEmployees();
-  expect(res).toEqual([{ id: 1, name: "A" }]);
+  expect(res).toEqual([{ id: 1, name: "B" }]);
   expect(global.fetch).toHaveBeenCalledWith("http://api/employees", {
     cache: "no-store",
   });
