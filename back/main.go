@@ -24,7 +24,11 @@ func main() {
 	api := NewAPI(store)
 	api.RegisterRoutes(mux)
 
-	addr := ":8080"
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	addr := ":" + port
 	log.Printf("listening on %s", addr)
 	if err := http.ListenAndServe(addr, withCORS(mux)); err != nil {
 		log.Fatal(err)
