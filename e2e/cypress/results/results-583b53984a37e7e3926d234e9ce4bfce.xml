@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="2.863" tests="1" failures="0">
+  <testsuite name="Root Suite" timestamp="2025-11-28T04:59:10" tests="0" file="cypress/e2e/reviews.cy.ts" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Performance reviews flow" timestamp="2025-11-28T04:59:10" tests="1" time="2.854" failures="0">
+    <testcase name="Performance reviews flow creates and approves a review with visible summaries" time="2.820" classname="creates and approves a review with visible summaries">
+    </testcase>
+  </testsuite>
+</testsuites>

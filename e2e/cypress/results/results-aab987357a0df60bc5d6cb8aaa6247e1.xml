@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="1.192" tests="1" failures="0">
+  <testsuite name="Root Suite" timestamp="2025-11-28T04:50:00" tests="0" file="cypress/e2e/delete_employee.cy.ts" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Delete employee" timestamp="2025-11-28T04:50:00" tests="1" time="1.189" failures="0">
+    <testcase name="Delete employee removes an employee from the grid" time="1.158" classname="removes an employee from the grid">
+    </testcase>
+  </testsuite>
+</testsuites>

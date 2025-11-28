@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="7.834" tests="1" failures="1">
+  <testsuite name="Root Suite" timestamp="2025-11-28T04:53:31" tests="0" file="cypress/e2e/payroll.cy.ts" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Payroll flow" timestamp="2025-11-28T04:53:31" tests="1" time="7.823" failures="1">
+    <testcase name="Payroll flow registers a payroll record and shows totals" time="0.000" classname="registers a payroll record and shows totals">
+      <failure message="Timed out retrying after 4000ms: Expected to find content: &apos;Total acumulado&apos; within the selector: &apos;article&apos; but never did." type="AssertionError"><![CDATA[AssertionError: Timed out retrying after 4000ms: Expected to find content: 'Total acumulado' within the selector: 'article' but never did.
+    at Context.eval (webpack://tp07-e2e/./cypress/e2e/payroll.cy.ts:24:0)]]></failure>
+    </testcase>
+  </testsuite>
+</testsuites>

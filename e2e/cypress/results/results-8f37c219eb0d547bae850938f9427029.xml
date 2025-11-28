@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="18.813" tests="1" failures="1">
+  <testsuite name="Root Suite" timestamp="2025-11-28T04:47:31" tests="0" file="cypress/e2e/create_employee.cy.ts" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Create employee" timestamp="2025-11-28T04:47:31" tests="1" time="18.805" failures="1">
+    <testcase name="Create employee creates a new employee and shows it as last row" time="0.000" classname="creates a new employee and shows it as last row">
+      <failure message="Timed out retrying after 4000ms: Expected to find content: &apos;Create&apos; within the selector: &apos;button&apos; but never did." type="AssertionError"><![CDATA[AssertionError: Timed out retrying after 4000ms: Expected to find content: 'Create' within the selector: 'button' but never did.
+    at Context.eval (webpack://tp07-e2e/./cypress/e2e/create_employee.cy.ts:6:0)]]></failure>
+    </testcase>
+  </testsuite>
+</testsuites>

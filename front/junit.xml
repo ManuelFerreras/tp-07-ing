@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="23" failures="0" errors="0" time="2.008">
+  <testsuite name="PerformanceReviewForm" errors="0" failures="0" skipped="0" timestamp="2025-11-28T05:01:17" time="0.721" tests="3">
+    <testcase classname="PerformanceReviewForm validates required fields in create mode" name="PerformanceReviewForm validates required fields in create mode" time="0.13">
+    </testcase>
+    <testcase classname="PerformanceReviewForm submits sanitized values" name="PerformanceReviewForm submits sanitized values" time="0.074">
+    </testcase>
+    <testcase classname="PerformanceReviewForm supports edit mode without employee selector" name="PerformanceReviewForm supports edit mode without employee selector" time="0.036">
+    </testcase>
+  </testsuite>
+  <testsuite name="PayrollForm" errors="0" failures="0" skipped="0" timestamp="2025-11-28T05:01:18" time="0.361" tests="2">
+    <testcase classname="PayrollForm requires employee and period" name="PayrollForm requires employee and period" time="0.084">
+    </testcase>
+    <testcase classname="PayrollForm submits numeric values and shows preview" name="PayrollForm submits numeric values and shows preview" time="0.093">
+    </testcase>
+  </testsuite>
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2025-11-28T05:01:18" time="0.302" tests="3">
+    <testcase classname=" renders and validates required" name=" renders and validates required" time="0.058">
+    </testcase>
+    <testcase classname=" submit successful" name=" submit successful" time="0.022">
+    </testcase>
+    <testcase classname=" shows error feedback" name=" shows error feedback" time="0.04">
+    </testcase>
+  </testsuite>
+  <testsuite name="HomePage" errors="0" failures="0" skipped="0" timestamp="2025-11-28T05:01:19" time="0.25" tests="1">
+    <testcase classname="HomePage shows cards for each module" name="HomePage shows cards for each module" time="0.088">
+    </testcase>
+  </testsuite>
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2025-11-28T05:01:19" time="0.084" tests="14">
+    <testcase classname=" getEmployees happy path" name=" getEmployees happy path" time="0.002">
+    </testcase>
+    <testcase classname=" createEmployee happy path" name=" createEmployee happy path" time="0.001">
+    </testcase>
+    <testcase classname=" updateEmployee happy path" name=" updateEmployee happy path" time="0">
+    </testcase>
+    <testcase classname=" createEmployee propagates 422 error from server" name=" createEmployee propagates 422 error from server" time="0.003">
+    </testcase>
+    <testcase classname=" getEmployees error path propagates message" name=" getEmployees error path propagates message" time="0.001">
+    </testcase>
+    <testcase classname=" updateEmployee error path propagates message" name=" updateEmployee error path propagates message" time="0">
+    </testcase>
+    <testcase classname=" deleteEmployee hits endpoint with delete verb" name=" deleteEmployee hits endpoint with delete verb" time="0.001">
+    </testcase>
+    <testcase classname=" deleteEmployee propagates API error" name=" deleteEmployee propagates API error" time="0.001">
+    </testcase>
+    <testcase classname=" getReviews sends filter params" name=" getReviews sends filter params" time="0.003">
+    </testcase>
+    <testcase classname=" createReview trims data before sending" name=" createReview trims data before sending" time="0.001">
+    </testcase>
+    <testcase classname=" updateReview hits endpoint with payload" name=" updateReview hits endpoint with payload" time="0">
+    </testcase>
+    <testcase classname=" transitionReview updates status" name=" transitionReview updates status" time="0">
+    </testcase>
+    <testcase classname=" getPayroll builds query string" name=" getPayroll builds query string" time="0">
+    </testcase>
+    <testcase classname=" createPayroll normalizes optional numbers" name=" createPayroll normalizes optional numbers" time="0">
+    </testcase>
+  </testsuite>
+</testsuites>

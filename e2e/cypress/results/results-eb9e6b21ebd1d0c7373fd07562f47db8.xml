@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="3.654" tests="1" failures="0">
+  <testsuite name="Root Suite" timestamp="2025-11-28T05:02:05" tests="0" file="cypress/e2e/payroll.cy.ts" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Payroll flow" timestamp="2025-11-28T05:02:05" tests="1" time="3.638" failures="0">
+    <testcase name="Payroll flow registers a payroll record and shows totals" time="3.608" classname="registers a payroll record and shows totals">
+    </testcase>
+  </testsuite>
+</testsuites>

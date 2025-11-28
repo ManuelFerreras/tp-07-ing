@@ -10,6 +10,19 @@
 - E2E: Cypress (estándar de facto). Alternativas: Playwright (excelente, pero requisito pide Cypress).
 - CI/CD: Azure Pipelines + SonarCloud (requisito).
 
+## Alcance funcional y módulos entregados
+
+- Gestión de empleados (CRUD) se mantiene como módulo base.
+- Evaluaciones de desempeño:
+  - Store en Go con estados `draft → submitted → approved`, ratings 1-5 y comentarios.
+  - Front: tablero con formulario de alta, filtros por empleado/estado, edición y tarjetas con promedios por persona.
+  - Backend: endpoints `GET/POST /reviews`, `PUT /reviews/{id}`, `PUT /reviews/{id}/status` + agregados por empleado.
+- Nómina:
+  - Store calcula neto = `base + horasExtra*tarifa + bonos - deducciones` y expone totales por período.
+  - Front: formulario con previsualización en tiempo real y listado con totales acumulados.
+  - Backend: `GET/POST /payroll` con filtros `employeeId` y `period`.
+- Se agregaron unit tests (Go + Jest) para cubrir reglas de negocio (transiciones, neto) y formularios.
+
 ## Container Registry
 
 - Elegido: GitHub Container Registry (`ghcr.io`).
@@ -78,12 +91,11 @@ Justificación
 
 - Frontend
   - Estado: Jest genera `coverage/lcov.info` y aplica umbral global 70%.
-  - Cubierto: `src/lib/api.ts` (happy path y errores 422/404/500), `EmployeeForm` (validación requerida, submit exitoso y error UI).
-  - Brechas: `src/app/employees/page.tsx` (render tabla con lista vacía, flujo de edición, render de alerta en error inicial).
-  - Sugerencia: añadir 1-2 tests de la página para consolidar ≥70% y, opcionalmente, `coverageReporters: ['html']` para inspección visual.
+  - Cubierto: `src/lib/api.ts` completo (empleados + reviews + payroll), `EmployeeForm`, `PerformanceReviewForm`, `PayrollForm`, `Home`.
+  - Brechas: wiring de páginas (`src/app/**`) se valida vía Cypress; no duplicamos con Jest.
 - Backend
   - Estado: `make cover` genera `cover.out`; `make check-cover` aplica gate 70%. `make cobertura` produce `cobertura.xml` para Azure.
-  - Cubierto: GET/POST/PUT happy; errores 422 (payload inválido), 404 (id inexistente), 405 (método no permitido), 500 (fallo de store), OPTIONS (CORS), JSON inválido, lista vacía `[]`.
+  - Cubierto: empleados + nuevas rutas `/reviews` y `/payroll` (éxito, validaciones, transiciones).
   - Brechas: opcional verificar encabezados CORS en GET/POST/PUT y paths de logging.
 - Cómo reproducir
   - Front: `cd front && npm run test:coverage` (reporte consola y `coverage/lcov.info`).
@@ -107,6 +119,14 @@ Justificación
   - 422 al crear: `cy.intercept('POST', '**/employees', { statusCode: 422, body: { error: 'name is required' } })`.
   - 500 al actualizar: `cy.intercept('PUT', '**/employees/*', { statusCode: 500, body: { error: 'internal error' } })`.
   - Verificación: la UI muestra el mensaje en `[role="alert"]`.
+- Evaluaciones de desempeño end-to-end (`e2e/cypress/e2e/reviews.cy.ts`)
+  - Precondición: se crea empleado vía `cy.request` al backend.
+  - Flujo: completar formulario → generar evaluación → avanzar a `submitted` y luego `approved`.
+  - Verificación: la fila refleja el estado final y la tarjeta de resumen muestra promedio.
+- Nómina (`e2e/cypress/e2e/payroll.cy.ts`)
+  - Precondición: empleado sembrado vía API.
+  - Flujo: cargar formulario con horas extra/bonos/deducciones → enviar.
+  - Verificación: la tabla muestra el registro y el panel “Total acumulado” refleja el neto calculado.
 
 ## Quality Gates y rollback
 
@@ -142,3 +162,10 @@ Justificación
 - Fail fast y protección de ramas:
   - Dependencias `needs` hacen que si un job falla no ejecuten los siguientes.
   - Activar Branch Protection en `main` para requerir “SonarCloud Code Analysis” y los checks de `build_test_front`, `build_test_back` y `e2e`.
+
+# Como Correr
+
+- Test Back: `cd back && go test ./...`
+- Test Front: `cd front && npm run test:ci`
+- Test E2E: `cd e2e && FRONTEND_URL=http://localhost:3000 API_URL=http://localhost:8080 npx cypress run --headless`
+- Test Sonar: `cd back && make cover && go tool cover -func=cover.out`

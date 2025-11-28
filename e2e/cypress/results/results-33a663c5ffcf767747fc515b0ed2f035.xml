@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="10.271" tests="2" failures="2">
+  <testsuite name="Root Suite" timestamp="2025-11-28T04:47:55" tests="0" file="cypress/e2e/error_handling.cy.ts" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Error handling" timestamp="2025-11-28T04:47:55" tests="2" time="10.263" failures="2">
+    <testcase name="Error handling shows validation error 422" time="0.000" classname="shows validation error 422">
+      <failure message="Timed out retrying after 4000ms: Expected to find content: &apos;Create&apos; within the selector: &apos;button&apos; but never did." type="AssertionError"><![CDATA[AssertionError: Timed out retrying after 4000ms: Expected to find content: 'Create' within the selector: 'button' but never did.
+    at Context.eval (webpack://tp07-e2e/./cypress/e2e/error_handling.cy.ts:10:0)]]></failure>
+    </testcase>
+    <testcase name="Error handling shows generic error 500" time="0.000" classname="shows generic error 500">
+      <failure message="Timed out retrying after 4000ms: Expected to find content: &apos;Create&apos; within the selector: &apos;button&apos; but never did." type="AssertionError"><![CDATA[AssertionError: Timed out retrying after 4000ms: Expected to find content: 'Create' within the selector: 'button' but never did.
+    at Context.eval (webpack://tp07-e2e/./cypress/e2e/error_handling.cy.ts:22:0)]]></failure>
+    </testcase>
+  </testsuite>
+</testsuites>
