@@ -61,7 +61,8 @@ jobs:
           if [ -d public ]; then cp -R public "$ARTIFACT_DIR"/; fi
           cp -R .next "$ARTIFACT_DIR"/
           npm ci --omit=dev --prefix "$ARTIFACT_DIR"
-          (cd "$ARTIFACT_DIR" && zip -r ../frontend-dist.zip .)
+          # -y preserves symlinks (e.g. node_modules/.bin/next) so runtime start works after unzip.
+          (cd "$ARTIFACT_DIR" && zip -yr ../frontend-dist.zip .)
 
       - name: Publish Frontend Release Artifact
         uses: actions/upload-artifact@v4
